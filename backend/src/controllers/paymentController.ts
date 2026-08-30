@@ -14,7 +14,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
   const paymentIntent = await getStripe().paymentIntents.create({
     amount: Math.round(amount * 100),
     currency: "gbp",
-    automatic_payment_methods: { enabled: true },
+    payment_method_types: ["card"],
   });
 
   res.json({ clientSecret: paymentIntent.client_secret });
