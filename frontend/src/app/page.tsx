@@ -1,9 +1,20 @@
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { sampleCakes } from "@/lib/sample-cakes";
+import { getCakes } from "@/lib/api";
 
-export default function Home() {
+const categoryFallback: Record<string, { emoji: string; gradient: string }> = {
+  birthday: { emoji: "🎂", gradient: "from-rose-300 to-rose-500" },
+  wedding: { emoji: "💒", gradient: "from-amber-200 to-rose-300" },
+  anniversary: { emoji: "🍫", gradient: "from-orange-300 to-rose-400" },
+  cupcakes: { emoji: "🧁", gradient: "from-amber-200 to-pink-300" },
+  custom: { emoji: "🍰", gradient: "from-pink-300 to-amber-300" },
+};
+
+export default async function Home() {
+  const cakes = await getCakes().catch(() => null);
+
   return (
     <div className="flex flex-col flex-1">
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur">
@@ -46,27 +57,48 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {sampleCakes.map((cake) => (
-            <Card key={cake.id} className="overflow-hidden py-0">
-              <div
-                className={`flex h-40 items-center justify-center bg-gradient-to-br ${cake.gradient} text-6xl`}
-              >
-                {cake.emoji}
-              </div>
-              <CardContent className="px-5 pt-4">
-                <Badge variant="outline" className="mb-2 capitalize">
-                  {cake.category}
-                </Badge>
-                <h3 className="font-semibold">{cake.name}</h3>
-                <p className="text-lg font-bold text-primary">£{cake.price}</p>
-              </CardContent>
-              <CardFooter className="px-5 pb-5">
-                <Button className="w-full">Add to cart</Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        {!cakes && (
+          <p className="text-muted-foreground">
+            Unable to load the menu right now — check that the backend is running.
+          </p>
+        )}
+
+        {cakes && (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {cakes.map((cake) => {
+              const fallback = categoryFallback[cake.category];
+              return (
+                <Card key={cake._id} className="overflow-hidden py-0">
+                  <div className={`relative h-40 bg-gradient-to-br ${fallback.gradient}`}>
+                    {cake.images[0] ? (
+                      <Image
+                        src={cake.images[0]}
+                        alt={cake.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-6xl">
+                        {fallback.emoji}
+                      </div>
+                    )}
+                  </div>
+                  <CardContent className="px-5 pt-4">
+                    <Badge variant="outline" className="mb-2 capitalize">
+                      {cake.category}
+                    </Badge>
+                    <h3 className="font-semibold">{cake.name}</h3>
+                    <p className="text-lg font-bold text-primary">£{cake.price}</p>
+                  </CardContent>
+                  <CardFooter className="px-5 pb-5">
+                    <Button className="w-full">Add to cart</Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <footer className="border-t border-border/60 py-8">
