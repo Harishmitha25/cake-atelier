@@ -19,7 +19,7 @@ export async function getAllOrders(_req: AuthRequest, res: Response) {
 
 export async function updateOrderStatus(req: AuthRequest, res: Response) {
   const { status } = req.body;
-  const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+  const order = await Order.findByIdAndUpdate(req.params.id, { status }, { returnDocument: "after" });
   if (!order) return res.status(404).json({ message: "Order not found" });
   res.json(order);
 }

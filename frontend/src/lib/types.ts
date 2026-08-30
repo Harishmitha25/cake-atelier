@@ -24,13 +24,22 @@ export interface OrderItem {
   quantity: number;
 }
 
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "out-for-delivery"
+  | "delivered"
+  | "cancelled";
+
 export interface Order {
   _id: string;
   items: OrderItem[];
   totalAmount: number;
   deliveryDate: string;
   deliveryAddress: string;
-  status: "pending" | "confirmed" | "preparing" | "out-for-delivery" | "delivered" | "cancelled";
+  status: OrderStatus;
   paymentStatus: "pending" | "paid" | "failed";
   createdAt: string;
+  user?: { _id: string; name: string; email: string };
 }
