@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useCartStore, cartTotal } from "@/lib/cartStore";
+import { useCartStore, cartTotal, lineKey } from "@/lib/cartStore";
 import { useAuthStore } from "@/lib/authStore";
 import { apiFetch } from "@/lib/api";
 import { stripePromise } from "@/lib/stripe";
@@ -63,6 +63,8 @@ function PaymentForm({
             name: i.cake.name,
             price: i.cake.price,
             quantity: i.quantity,
+            size: i.size,
+            flavor: i.flavor,
           })),
           totalAmount: cartTotal(items),
           deliveryDate,
@@ -140,10 +142,14 @@ export default function CheckoutPage() {
           <CardTitle className="text-lg">Order summary</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          {items.map(({ cake, quantity }) => (
-            <div key={cake._id} className="flex justify-between text-sm">
+          {items.map(({ cake, quantity, size, flavor }) => (
+            <div key={lineKey(cake._id, size, flavor)} className="flex justify-between text-sm">
               <span>
-                {cake.name} × {quantity}
+                {cake.name}
+                {(size || flavor) && (
+                  <span className="text-muted-foreground"> ({[size, flavor].filter(Boolean).join(" · ")})</span>
+                )}{" "}
+                × {quantity}
               </span>
               <span>£{(cake.price * quantity).toFixed(2)}</span>
             </div>
