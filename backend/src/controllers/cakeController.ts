@@ -20,7 +20,7 @@ export async function createCake(req: Request, res: Response) {
 }
 
 export async function updateCake(req: Request, res: Response) {
-  const cake = await Cake.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const cake = await Cake.findByIdAndUpdate(req.params.id, req.body, { returnDocument: "after" });
   if (!cake) return res.status(404).json({ message: "Cake not found" });
   res.json(cake);
 }

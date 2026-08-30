@@ -156,6 +156,11 @@ export function Header() {
                 <DropdownMenuItem onClick={() => router.push("/orders")}>
                   My orders
                 </DropdownMenuItem>
+                {user.role === "admin" && (
+                  <DropdownMenuItem onClick={() => router.push("/admin/cakes")}>
+                    Admin dashboard
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleLogout}>Sign out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
