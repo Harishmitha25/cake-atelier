@@ -9,11 +9,3 @@ export interface Cake {
   flavors: string[];
   isAvailable: boolean;
 }
-
-export interface CartItem {
-  cake: Cake;
-  quantity: number;
-  size?: string;
-  flavor?: string;
-  message?: string;
-}
