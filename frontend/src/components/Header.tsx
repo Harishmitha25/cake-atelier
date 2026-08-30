@@ -145,6 +145,9 @@ export function Header() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => router.push("/orders")}>
+                  My orders
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>Sign out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
