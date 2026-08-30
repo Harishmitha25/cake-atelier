@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Minus, Plus, Trash2, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetFooter,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -112,6 +113,12 @@ export function Header() {
                     <span>Total</span>
                     <span>£{cartTotal(items).toFixed(2)}</span>
                   </div>
+                  <SheetClose
+                    nativeButton={false}
+                    render={<Link href="/checkout" className={buttonVariants({ className: "w-full" })} />}
+                  >
+                    Checkout
+                  </SheetClose>
                 </SheetFooter>
               )}
             </SheetContent>
