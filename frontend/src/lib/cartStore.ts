@@ -2,43 +2,59 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Cake } from "./types";
 
-interface CartItem {
+export interface CartItem {
   cake: Cake;
   quantity: number;
+  size?: string;
+  flavor?: string;
 }
 
 interface CartState {
   items: CartItem[];
-  addItem: (cake: Cake) => void;
-  removeItem: (cakeId: string) => void;
-  updateQuantity: (cakeId: string, quantity: number) => void;
+  addItem: (cake: Cake, options?: { size?: string; flavor?: string; quantity?: number }) => void;
+  removeItem: (key: string) => void;
+  updateQuantity: (key: string, quantity: number) => void;
   clear: () => void;
+}
+
+export function lineKey(cakeId: string, size?: string, flavor?: string) {
+  return `${cakeId}::${size ?? ""}::${flavor ?? ""}`;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       items: [],
-      addItem: (cake) =>
+      addItem: (cake, options) =>
         set((state) => {
-          const existing = state.items.find((i) => i.cake._id === cake._id);
+          const size = options?.size;
+          const flavor = options?.flavor;
+          const quantity = options?.quantity ?? 1;
+          const key = lineKey(cake._id, size, flavor);
+          const existing = state.items.find((i) => lineKey(i.cake._id, i.size, i.flavor) === key);
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.cake._id === cake._id ? { ...i, quantity: i.quantity + 1 } : i
+                lineKey(i.cake._id, i.size, i.flavor) === key
+                  ? { ...i, quantity: i.quantity + quantity }
+                  : i
               ),
             };
           }
-          return { items: [...state.items, { cake, quantity: 1 }] };
+          return { items: [...state.items, { cake, quantity, size, flavor }] };
         }),
-      removeItem: (cakeId) =>
-        set((state) => ({ items: state.items.filter((i) => i.cake._id !== cakeId) })),
-      updateQuantity: (cakeId, quantity) =>
+      removeItem: (key) =>
+        set((state) => ({
+          items: state.items.filter((i) => lineKey(i.cake._id, i.size, i.flavor) !== key),
+        })),
+      updateQuantity: (key, quantity) =>
         set((state) => ({
           items:
             quantity <= 0
-              ? state.items.filter((i) => i.cake._id !== cakeId)
-              : state.items.map((i) => (i.cake._id === cakeId ? { ...i, quantity } : i)),
+              ? state.items.filter((i) => lineKey(i.cake._id, i.size, i.flavor) !== key)
+              : state.items.map((i) =>
+                  lineKey(i.cake._id, i.size, i.flavor) === key ? { ...i, quantity } : i
+                ),
         })),
       clear: () => set({ items: [] }),
     }),

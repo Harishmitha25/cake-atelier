@@ -9,6 +9,13 @@ export async function getCakes(category?: string): Promise<Cake[]> {
   return res.json();
 }
 
+export async function getCakeById(id: string): Promise<Cake | null> {
+  const res = await fetch(`${API_URL}/cakes/${id}`, { cache: "no-store" });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("Failed to load cake");
+  return res.json();
+}
+
 export async function getMyOrders(): Promise<Order[]> {
   return apiFetch<Order[]>("/orders/mine");
 }

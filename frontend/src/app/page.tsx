@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Header } from "@/components/Header";
 import { CakeCard } from "@/components/CakeCard";
 import { getCakes } from "@/lib/api";
 
@@ -9,8 +8,6 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col flex-1">
-      <Header />
-
       <section className="bg-gradient-to-b from-secondary/60 to-background">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-24 text-center">
           <Badge variant="secondary" className="text-sm">Freshly baked, every day</Badge>
