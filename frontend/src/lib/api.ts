@@ -1,4 +1,4 @@
-import type { Cake } from "./types";
+import type { Cake, Order } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
 
@@ -7,6 +7,10 @@ export async function getCakes(category?: string): Promise<Cake[]> {
   const res = await fetch(`${API_URL}/cakes${query}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load cakes");
   return res.json();
+}
+
+export async function getMyOrders(): Promise<Order[]> {
+  return apiFetch<Order[]>("/orders/mine");
 }
 
 export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
