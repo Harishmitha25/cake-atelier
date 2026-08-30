@@ -1,24 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { sampleCakes } from "@/lib/sample-cakes";
+import { Header } from "@/components/Header";
+import { CakeCard } from "@/components/CakeCard";
+import { getCakes } from "@/lib/api";
 
-export default function Home() {
+export default async function Home() {
+  const cakes = await getCakes().catch(() => null);
+
   return (
     <div className="flex flex-col flex-1">
-      <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-xl font-semibold tracking-tight">
-            🍰 Sweet Layers
-          </span>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground sm:flex">
-            <a href="#menu" className="hover:text-foreground">Menu</a>
-            <a href="#" className="hover:text-foreground">About</a>
-            <a href="#" className="hover:text-foreground">Cart</a>
-          </nav>
-          <Button variant="default">Sign in</Button>
-        </div>
-      </header>
+      <Header />
 
       <section className="bg-gradient-to-b from-secondary/60 to-background">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-24 text-center">
@@ -32,8 +23,12 @@ export default function Home() {
             handcrafted cake and have it delivered fresh to your door.
           </p>
           <div className="flex gap-4">
-            <Button size="lg">Order Now</Button>
-            <Button size="lg" variant="outline">Browse Menu</Button>
+            <Button size="lg" nativeButton={false} render={<a href="#menu" />}>
+              Order Now
+            </Button>
+            <Button size="lg" variant="outline" nativeButton={false} render={<a href="#menu" />}>
+              Browse Menu
+            </Button>
           </div>
         </div>
       </section>
@@ -46,27 +41,19 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {sampleCakes.map((cake) => (
-            <Card key={cake.id} className="overflow-hidden py-0">
-              <div
-                className={`flex h-40 items-center justify-center bg-gradient-to-br ${cake.gradient} text-6xl`}
-              >
-                {cake.emoji}
-              </div>
-              <CardContent className="px-5 pt-4">
-                <Badge variant="outline" className="mb-2 capitalize">
-                  {cake.category}
-                </Badge>
-                <h3 className="font-semibold">{cake.name}</h3>
-                <p className="text-lg font-bold text-primary">£{cake.price}</p>
-              </CardContent>
-              <CardFooter className="px-5 pb-5">
-                <Button className="w-full">Add to cart</Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        {!cakes && (
+          <p className="text-muted-foreground">
+            Unable to load the menu right now — check that the backend is running.
+          </p>
+        )}
+
+        {cakes && (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {cakes.map((cake) => (
+              <CakeCard key={cake._id} cake={cake} />
+            ))}
+          </div>
+        )}
       </section>
 
       <footer className="border-t border-border/60 py-8">
