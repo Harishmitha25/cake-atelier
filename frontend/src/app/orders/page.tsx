@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/lib/authStore";
 import { getMyOrders } from "@/lib/api";
+import { OrderCardSkeleton } from "@/components/OrderCardSkeleton";
 import type { Order } from "@/lib/types";
 
 const statusVariant: Record<Order["status"], "default" | "secondary" | "outline" | "destructive"> = {
@@ -44,9 +45,7 @@ export default function OrdersPage() {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      {!error && orders === null && (
-        <p className="text-muted-foreground">Loading your orders…</p>
-      )}
+      {!error && orders === null && <OrderCardSkeleton />}
 
       {orders?.length === 0 && (
         <p className="text-muted-foreground">You haven&apos;t placed any orders yet.</p>

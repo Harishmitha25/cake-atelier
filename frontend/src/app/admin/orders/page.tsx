@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { getAllOrders, updateOrderStatus } from "@/lib/api";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { OrderCardSkeleton } from "@/components/OrderCardSkeleton";
 import { useRequireAdmin } from "@/lib/useRequireAdmin";
 import type { Order, OrderStatus } from "@/lib/types";
 
@@ -55,7 +56,7 @@ export default function AdminOrdersPage() {
       <AdminNav />
       <h1 className="text-2xl font-bold tracking-tight">Manage orders</h1>
 
-      {orders === null && <p className="text-muted-foreground">Loading…</p>}
+      {orders === null && <OrderCardSkeleton />}
       {orders?.length === 0 && <p className="text-muted-foreground">No orders yet.</p>}
 
       {orders?.map((order) => (
