@@ -1,3 +1,10 @@
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "customer" | "admin";
+}
+
 export interface Cake {
   _id: string;
   name: string;

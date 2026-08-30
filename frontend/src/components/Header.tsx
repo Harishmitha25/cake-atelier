@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ShoppingCart, Minus, Plus, Trash2, User as UserIcon } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -13,13 +16,32 @@ import {
   SheetFooter,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { useCartStore, cartTotal, cartCount } from "@/lib/cartStore";
+import { useAuthStore } from "@/lib/authStore";
 
 export function Header() {
   const items = useCartStore((state) => state.items);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
   const count = cartCount(items);
+
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  async function handleLogout() {
+    await logout();
+    toast.success("Signed out");
+    router.push("/");
+  }
 
   return (
     <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur">
@@ -105,7 +127,25 @@ export function Header() {
               )}
             </SheetTrigger>
           </Sheet>
-          <Button variant="default">Sign in</Button>
+
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={<Button variant="outline" size="icon" />}
+              >
+                <UserIcon className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>Sign out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="default" nativeButton={false} render={<Link href="/login" />}>
+              Sign in
+            </Button>
+          )}
         </div>
       </div>
     </header>

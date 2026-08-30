@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import { AuthRequest } from "../middleware/auth";
 
 function signToken(id: string, role: string) {
   return jwt.sign({ id, role }, process.env.JWT_SECRET!, { expiresIn: "7d" });
@@ -48,4 +49,10 @@ export async function login(req: Request, res: Response) {
 export function logout(_req: Request, res: Response) {
   res.clearCookie("token");
   res.status(204).send();
+}
+
+export async function me(req: AuthRequest, res: Response) {
+  const user = await User.findById(req.user!.id).select("-password");
+  if (!user) return res.status(404).json({ message: "User not found" });
+  res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }
